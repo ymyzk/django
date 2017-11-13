@@ -1,6 +1,7 @@
 import functools
 import os
 from collections import OrderedDict
+import sys
 
 from django.apps import apps
 from django.conf import settings
@@ -121,6 +122,9 @@ class FileSystemFinder(BaseFinder):
         List all files in all locations.
         """
         for prefix, root in self.locations:
+            if not os.path.isdir(root):
+                sys.stderr.write("Skipping '%s' because it does not exist or is not a directory\n" % root)
+                continue
             storage = self.storages[root]
             for path in utils.get_files(storage, ignore_patterns):
                 yield path, storage
